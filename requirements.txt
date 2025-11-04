@@ -1,0 +1,6 @@
+# Ollie-CLI Requirements
+# Core dependencies for running Ollie-CLI
+
+# Windows curses support (optional, only needed on Windows)
+# Install with: pip install windows-curses
+# windows-curses>=2.3.0; sys_platform == 'win32'
