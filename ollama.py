@@ -21,10 +21,10 @@ class OllamaError(Exception):
 def ensure_available() -> bool:
     """
     Validate that the Ollama CLI is available and get version.
-    
+
     Returns:
         bool: True if Ollama is available
-        
+
     Raises:
         OllamaError: If Ollama is not found or not working
     """
@@ -56,10 +56,10 @@ def ensure_available() -> bool:
 def list_models() -> List[Dict[str, any]]:
     """
     List available Ollama models.
-    
+
     Returns:
         List of model dictionaries with name, size, and other metadata
-        
+
     Raises:
         OllamaError: If listing models fails
     """
@@ -70,15 +70,15 @@ def list_models() -> List[Dict[str, any]]:
             text=True,
             timeout=10
         )
-        
+
         if result.returncode != 0:
             logger.error(f"Failed to list models: {result.stderr}")
             raise OllamaError(f"Failed to list models: {result.stderr}")
-        
+
         # Try to parse JSON output
         try:
             data = json.loads(result.stdout)
-            
+
             # Handle both array and {models:[]} layouts
             if isinstance(data, list):
                 models = data
@@ -100,10 +100,10 @@ def list_models() -> List[Dict[str, any]]:
                             "name": parts[0],
                             "size": parts[1] if len(parts) > 1 else "unknown"
                         })
-        
+
         logger.info(f"Listed {len(models)} models")
         return models
-        
+
     except subprocess.TimeoutExpired:
         logger.error("Listing models timed out")
         raise OllamaError("Listing models timed out")
@@ -115,19 +115,19 @@ def list_models() -> List[Dict[str, any]]:
 def pull_model(model_name: str, stream: bool = True) -> subprocess.CompletedProcess:
     """
     Pull/download an Ollama model with optional streaming output.
-    
+
     Args:
         model_name: Name of the model to pull
         stream: If True, stream output to stdout in real-time
-        
+
     Returns:
         subprocess.CompletedProcess-like object with returncode
-        
+
     Raises:
         OllamaError: If pull fails
     """
     logger.info(f"Pulling model: {model_name}")
-    
+
     try:
         if stream:
             # Stream output to terminal
@@ -138,25 +138,25 @@ def pull_model(model_name: str, stream: bool = True) -> subprocess.CompletedProc
                 text=True,
                 bufsize=1
             )
-            
+
             # Forward lines to stdout
             for line in process.stdout:
                 print(line, end='', flush=True)
-            
+
             process.wait()
             returncode = process.returncode
-            
+
             if returncode != 0:
                 logger.error(f"Failed to pull model {model_name}")
                 raise OllamaError(f"Failed to pull model {model_name}")
-            
+
             logger.info(f"Successfully pulled model: {model_name}")
-            
+
             # Return a CompletedProcess-like object
             class Result:
                 def __init__(self, returncode):
                     self.returncode = returncode
-            
+
             return Result(returncode)
         else:
             # Non-streaming: capture all output
@@ -166,14 +166,14 @@ def pull_model(model_name: str, stream: bool = True) -> subprocess.CompletedProc
                 text=True,
                 timeout=300
             )
-            
+
             if result.returncode != 0:
                 logger.error(f"Failed to pull model {model_name}: {result.stderr}")
                 raise OllamaError(f"Failed to pull model {model_name}: {result.stderr}")
-            
+
             logger.info(f"Successfully pulled model: {model_name}")
             return result
-            
+
     except subprocess.TimeoutExpired:
         logger.error(f"Pulling model {model_name} timed out")
         raise OllamaError(f"Pulling model {model_name} timed out")
@@ -188,18 +188,18 @@ def pull_model(model_name: str, stream: bool = True) -> subprocess.CompletedProc
 def delete_model(model_name: str) -> subprocess.CompletedProcess:
     """
     Delete an Ollama model.
-    
+
     Args:
         model_name: Name of the model to delete
-        
+
     Returns:
         subprocess.CompletedProcess object
-        
+
     Raises:
         OllamaError: If deletion fails
     """
     logger.info(f"Deleting model: {model_name}")
-    
+
     try:
         result = subprocess.run(
             ["ollama", "rm", model_name],
@@ -207,14 +207,14 @@ def delete_model(model_name: str) -> subprocess.CompletedProcess:
             text=True,
             timeout=30
         )
-        
+
         if result.returncode != 0:
             logger.error(f"Failed to delete model {model_name}: {result.stderr}")
             raise OllamaError(f"Failed to delete model {model_name}: {result.stderr}")
-        
+
         logger.info(f"Successfully deleted model: {model_name}")
         return result
-        
+
     except subprocess.TimeoutExpired:
         logger.error(f"Deleting model {model_name} timed out")
         raise OllamaError(f"Deleting model {model_name} timed out")
@@ -230,15 +230,15 @@ def run_chat(model_name: str) -> int:
     """
     Start an interactive chat session with a model.
     This directly invokes ollama CLI and passes through to the terminal.
-    
+
     Args:
         model_name: Name of the model to chat with
-        
+
     Returns:
         Exit code from the chat process
     """
     logger.info(f"Starting chat with model: {model_name}")
-    
+
     try:
         result = subprocess.run(
             ["ollama", "run", model_name],
