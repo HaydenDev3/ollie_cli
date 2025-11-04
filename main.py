@@ -407,7 +407,7 @@ class OllieUI:
                 elif key == curses.KEY_DOWN:
                     if self.models:
                         self.selected_idx = (self.selected_idx + 1) % len(self.models)
-                elif key == ord('\n') or key == curses.KEY_ENTER:
+                elif key == ord('\n') or key == 10:  # 10 is Enter key
                     self.handle_chat()
                 elif key == ord('p') or key == ord('P'):
                     self.handle_pull()

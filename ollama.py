@@ -7,7 +7,7 @@ import json
 import logging
 import subprocess
 import sys
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def ensure_available() -> bool:
         raise OllamaError(f"Unexpected error checking Ollama: {e}")
 
 
-def list_models() -> List[Dict[str, any]]:
+def list_models() -> List[Dict[str, Any]]:
     """
     List available Ollama models.
 
