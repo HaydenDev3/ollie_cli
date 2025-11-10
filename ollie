@@ -1,0 +1,2 @@
+#!/bin/bash
+python3 "/home/runner/work/ollie_cli/ollie_cli/ollie.py" "$@"
