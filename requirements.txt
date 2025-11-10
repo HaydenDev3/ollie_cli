@@ -1,0 +1,19 @@
+# Ollie CLI - Python Requirements
+# 
+# Core Ollie CLI uses only Python standard library
+# Optional dependencies listed below
+
+# Windows curses support (Windows only)
+# Uncomment if running on Windows
+# windows-curses>=2.3.0; sys_platform == 'win32'
+
+# Optional: Code quality tools for development
+# flake8>=6.0.0
+# pylint>=2.17.0
+# black>=23.0.0
+
+# Optional: Testing tools
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+
+# Note: Ollama must be installed separately from https://ollama.ai/
