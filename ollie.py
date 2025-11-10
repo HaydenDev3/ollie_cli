@@ -40,9 +40,21 @@ class OllieCLI:
     
     def __init__(self):
         """Initialize the Ollie CLI application."""
-        self.config = Config.Config()
-        self.ui = UI.UI()
-        self.utils = Utils.Utils(self.config)
+        # Handle both direct import and module loading
+        if hasattr(Config, 'Config'):
+            self.config = Config.Config()
+        else:
+            self.config = Config()
+        
+        if hasattr(UI, 'UI'):
+            self.ui = UI.UI()
+        else:
+            self.ui = UI()
+        
+        if hasattr(Utils, 'Utils'):
+            self.utils = Utils.Utils(self.config)
+        else:
+            self.utils = Utils(self.config)
         self.conversation_history = []
         self.context_embeddings = []
         self.online_mode = True
