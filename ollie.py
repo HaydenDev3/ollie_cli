@@ -38,14 +38,22 @@ logger = logging.getLogger(__name__)
 class OllieCLI:
     """Main Ollie CLI application."""
 
-    def __init__(self):
+    def __init__(self, skip_ollama_check=False):
         """Initialize Ollie CLI components."""
-        self.ollama_client = OllamaClient()
+        self._ollama_client = None
+        self._skip_ollama_check = skip_ollama_check
         self.transcript_manager = TranscriptManager()
         self.dev_utils = DevUtils()
         self.mode = "online"  # online or offline
         
         logger.info(f"Ollie CLI v{__version__} initialized")
+    
+    @property
+    def ollama_client(self):
+        """Lazy initialization of Ollama client."""
+        if self._ollama_client is None:
+            self._ollama_client = OllamaClient()
+        return self._ollama_client
 
     def run_interactive(self):
         """Run the interactive UI mode."""
@@ -252,8 +260,12 @@ def main():
     """Main entry point."""
     args = parse_args()
     
+    # Commands that don't need Ollama validation
+    no_ollama_commands = {"diff", "scaffold", "export"}
+    
     # Initialize Ollie CLI
-    cli = OllieCLI()
+    skip_check = hasattr(args, 'command') and args.command in no_ollama_commands
+    cli = OllieCLI(skip_ollama_check=skip_check)
     
     # Check if command was provided
     if args.command:
